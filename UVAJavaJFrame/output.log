@@ -1,0 +1,11 @@
+
+
+User clicked OPEN Button.
+Processing file : RUNNING.txt
+Calling extractCSVFileData() 
+Reading file. 
+INCORRECT_DATA at Line Number : 1 - Number of commas : 0
+Caught Exception in processing : INCORRECT_DATA at Line Number : 2 - Number of commas : 0
+
+
+User clicked OPEN Button.Exiting application. 
