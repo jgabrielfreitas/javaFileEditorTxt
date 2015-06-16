@@ -3,14 +3,8 @@ package file;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
-
-import javafx.scene.control.Alert;
 
 public class FileManager {
 	
@@ -58,7 +52,7 @@ public class FileManager {
 		boolean success = false;
 
 		try {
-
+			
             BufferedWriter bufwriter = new BufferedWriter(new FileWriter(file)); // new buffer writer passing the current file to edit
             bufwriter.write(toSave);//writes the edited string buffer to the new file
             bufwriter.close();//closes the file
@@ -72,7 +66,8 @@ public class FileManager {
 	}
 	
 	public boolean validateFile() throws Exception{
-		if(file.getAbsolutePath().endsWith(".txt"))
+		if(file.getAbsolutePath().endsWith(".txt") || file.getAbsolutePath().endsWith(".md") ||
+		   file.getAbsolutePath().endsWith(".log"))
 			return true;
 		else 
 			throw new Exception();
