@@ -40,7 +40,7 @@ public class FileEditor extends JFrame implements ActionListener {
 	    scpane 	 = new JScrollPane(textArea); //scrollpane  and add textarea to scrollpane
 	    menuExit    = new JMenuItem("Sair");
 	    menuSave = new JMenuItem("Salvar"); //menuitems
-	    menuLoad = new JMenuItem("Carregar"); //menuitems
+	    menuLoad = new JMenuItem("Abrir"); //menuitems
 	    menuNew  = new JMenuItem("Novo"); //menuitems
 	    credit   = new JMenuItem("Créditos"); //menuitems
 
@@ -62,7 +62,7 @@ public class FileEditor extends JFrame implements ActionListener {
 	    viewM.add(credit);
 
 	    menuSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-	    menuLoad.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, ActionEvent.CTRL_MASK));
+	    menuLoad.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 	    menuNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 	    menuExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
 
