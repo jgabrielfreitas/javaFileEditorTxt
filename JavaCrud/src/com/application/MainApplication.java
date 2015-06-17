@@ -5,11 +5,12 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import file.FileManager;
+import objects.FileManager;
+import objects.Person;
 
 public class MainApplication {
 
-	public  static final String APPLICATION_FILE_PATH = File.listRoots()[0] + "/home/jgabrielfreitas" + File.separator + "Crud_UVA";
+	public  static final String APPLICATION_FILE_PATH = File.listRoots()[0] + File.separator + "Crud_UVA";
 	private static FileManager manager = null;
 	private static final String DEFAULT_TEXT = "Aluno:20:Joao Gabriel:9876.54:16/06/2015andAluno:21:Isabella Lucero:9876.54:16/06/2015";
 

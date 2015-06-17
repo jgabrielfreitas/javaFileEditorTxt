@@ -1,7 +1,6 @@
 package com.application;
 
 import java.awt.GridLayout;
-import java.awt.HeadlessException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
@@ -15,21 +14,27 @@ import javax.swing.JTextField;
 import objects.FileManager;
 import objects.Person;
 
-public class CreatePersonApplication extends JFrame {
+public class AlterPersonApplication extends JFrame {
 	
 	private FileManager manager;
 	TableApplication tableApplication;
+	JTextField nameField, ageField, registerField;
+	Person personToEdit;
+	JComboBox combo;
+	int personId;
 	
-	public CreatePersonApplication(FileManager manager) {
+	public AlterPersonApplication(FileManager manager, TableApplication tableApplication, Person person) {
 		this.manager = manager;
+		this.tableApplication = tableApplication;
+		this.personToEdit = person;
 	}
-
+	
 	public void start() {
 		String[] items = {"Aluno", "Professor", "Diretor", "Funcionario"};
-	    JComboBox combo = new JComboBox(items);
-	    JTextField nameField = new JTextField("");
-	    JTextField ageField  = new JTextField("");
-	    JTextField registerField = new JTextField("");
+	    combo = new JComboBox(items);
+	    nameField = new JTextField(personToEdit.getName());
+	    ageField  = new JTextField(String.valueOf(personToEdit.getAge()));
+	    registerField = new JTextField(String.valueOf(personToEdit.getRegister()));
 	    JPanel panel = new JPanel(new GridLayout(0, 2));
 	    panel.add(new JLabel("Tipo:"));
 	    panel.add(combo);
@@ -40,23 +45,30 @@ public class CreatePersonApplication extends JFrame {
 	    panel.add(new JLabel("Matricula:"));
 	    panel.add(registerField);
 	    
-	   int result = JOptionPane.showConfirmDialog(null, panel, "Criador", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+	    // coloca o tipo da pessoa na posicao correta
+	    for (int i = 0; i < items.length; i++)
+			if (personToEdit.getPersonType().equals(items[i]))
+				combo.setSelectedIndex(i);
+	    
+	   int result = JOptionPane.showConfirmDialog(null, panel, "Editor de Pessoa", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 	   
 	    if (result == JOptionPane.OK_OPTION) {
 	        Person person = new Person(combo.getSelectedItem().toString(),
 	        						   Integer.parseInt(ageField.getText()),
 	        						   nameField.getText(),
 	        						   new Double(registerField.getText()));
-	        person.setCreateAt(new SimpleDateFormat("dd/MM/YYYY").format(new GregorianCalendar().getTime()));
+	        person.setCreateAt(personToEdit.getCreateAt()); // mantem a data antiga
 	        manager.saveEditedFile(manager.loadFileByPath() + "and" + person.toString());
 	        tableApplication.refreshTable();
 	    }
 	}
 
-	public void setTableApplication(TableApplication tableApplication) {
-		this.tableApplication = tableApplication;
+	public int getPersonId() {
+		return personId;
 	}
-	
-	
+
+	public void setPersonId(int personId) {
+		this.personId = personId;
+	}
 	
 }

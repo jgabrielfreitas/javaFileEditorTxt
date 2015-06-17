@@ -6,21 +6,22 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 
-import file.FileManager;
+import objects.FileManager;
+import objects.Person;
 
 import java.util.ArrayList;
 import java.util.List;;
 
 public class TableApplication extends JFrame implements ActionListener {
 
+	private static final long serialVersionUID = 1L;
 	// instancia dos atributos
 	private JTable table;
 	private JScrollPane scrollPane;
 	List<Person> personListToShow = new ArrayList<Person>();
 	private JMenu menuFile;
-	public static JMenuItem menuItemNewPerson, menuRefresh, menuRemove;
+	public static JMenuItem menuItemNewPerson, menuSave, menuRemove, menuAlter;
 	JMenuBar menuBar;
 	private static FileManager manager;
 
@@ -33,25 +34,33 @@ public class TableApplication extends JFrame implements ActionListener {
 		setBackground(Color.gray);
 		Container pane = getContentPane();
 	    pane.setLayout(new BorderLayout());
+	    
+	    // exibir a janela no centro da tela
+	    Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	    setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 		
 		// creating toolbar
 		menuBar  = new JMenuBar();
 		menuFile = new JMenu("Arquivo"); 		   // opcao 'arquivo'
 		menuItemNewPerson = new JMenuItem("Novo"); // nova pessoa
-		menuRefresh = new JMenuItem("Atualizar");  // atualizar tabela
+		menuSave = new JMenuItem("Salvar");        // salvar tabela
 		menuRemove = new JMenuItem("Remover");     // remover da tabela
+		menuAlter = new JMenuItem("Alterar");      // alterar da tabela
 		menuFile.add(menuItemNewPerson);
 		menuFile.add(menuRemove);
-		menuFile.add(menuRefresh);
+		menuFile.add(menuAlter);
+		menuFile.add(menuSave);
 		menuBar.add(menuFile);
 		
 		// criando atalhos
 		menuItemNewPerson.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 		menuRemove.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, ActionEvent.CTRL_MASK));
-		menuRefresh.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+		menuSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		menuAlter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
 	    menuItemNewPerson.addActionListener(this);
+	    menuAlter.addActionListener(this);
 	    menuRemove.addActionListener(this);
-	    menuRefresh.addActionListener(this);
+	    menuSave.addActionListener(this);
 
 		// criando as colunas da tabela
 		String columnNames[] = { "ID","Nome", "Idade", "Matricula", "Data", "Tipo" };
@@ -90,28 +99,87 @@ public class TableApplication extends JFrame implements ActionListener {
 			this.personListToShow.add(person);
 	}
 
+	// metodo de acoes para cada click
 	public void actionPerformed(ActionEvent e) {
 		
 		JMenuItem choice = (JMenuItem) e.getSource();
 		
+		// nova pessoa
 		if (choice == menuItemNewPerson) {
 			
 			CreatePersonApplication creator = new CreatePersonApplication(getManager());
 			creator.setTableApplication(this);
 			creator.start();
-		} else if (choice == menuRefresh) {
+			// salvar
+		} else if (choice == menuSave) {
 			
+			manager.updateTable(table);
 			refreshTable();
+			
+			// alterar
+		} else if (choice == menuAlter) {
+			
+			String idSelected = JOptionPane.showInputDialog("Digite o id da pessoa que deseja alterar");
+			Person person = getPersonById(idSelected);
+			if(person != null) {
+				
+				AlterPersonApplication alterPersonApplication = new AlterPersonApplication(manager, this, person);
+				alterPersonApplication.setPersonId(new Integer(idSelected));
+				alterPersonApplication.start();
+			}
+			
+			// remover
 		} else if (choice == menuRemove) {
 			
 			String idPersonToDelete = JOptionPane.showInputDialog("Digite o id da pessoa que deseja deletar");
 			if (idPersonToDelete.equals("")) {
-				new JOptionPane().showMessageDialog(null, "Digite um ID válido");
+				new JOptionPane().showMessageDialog(null, "Digite um ID valido");
 				return;
 			} else 
 				updateFile(idPersonToDelete);
 			
 		}
+		
+	}
+	
+	private Person getPersonById(String idSelected){
+		
+		Person person = null;
+		
+		try {
+			
+			int idToDelete = Integer.parseInt(idSelected);
+			
+			if (idToDelete > table.getRowCount()) 
+				throw new Exception();
+			
+			// varre a tabela a procura da pessoa
+            String contentNewFile = null;
+            for (int i = 0; i < table.getRowCount(); i++) {
+            	int currentId = new Integer(table.getValueAt(i, 0).toString());
+            	if(idToDelete == currentId) {
+            		String name = (String) table.getValueAt(i, 1); // pega o nome da pessoa que esta na posicao de i
+            		int age = new Integer((String) table.getValueAt(i, 2)); // pega a idade da pessoa que esta na posicao de i
+            		double register = new Double((String) table.getValueAt(i, 3)); // pega a matricula da pessoa que esta na posicao de i
+            		String date = (String) table.getValueAt(i, 4); // pega a data de criacao da pessoa que esta na posicao de i
+            		String personType = (String) table.getValueAt(i, 5); // pega o tipo da pessoa que esta na posicao de i
+            		
+            		person = new Person(personType, age, name, register);
+            		person.setCreateAt(date);
+            		
+            		if (contentNewFile == null)
+            			contentNewFile = person.toString();
+            		else
+            			contentNewFile = contentNewFile + "and" + person.toString();
+            	}
+            }
+			
+		} catch (Exception e) {
+			new JOptionPane().showMessageDialog(null, "Digite um ID valido");
+			e.printStackTrace();
+		}
+		
+		return person;
 		
 	}
 	
@@ -140,7 +208,7 @@ public class TableApplication extends JFrame implements ActionListener {
 			
 			
             String contentNewFile = null;
-            for (int i = 0; i < table.getRowCount(); i++){
+            for (int i = 0; i < table.getRowCount(); i++) {
             	int currentId = new Integer(table.getValueAt(i, 0).toString());
             	if(idToDelete != currentId) {
             		String name = (String) table.getValueAt(i, 1); // pega o nome da pessoa que esta na posicao de i
@@ -165,7 +233,7 @@ public class TableApplication extends JFrame implements ActionListener {
             }
 			
 		} catch (Exception e) {
-			new JOptionPane().showMessageDialog(null, "Digite um ID válido");
+			new JOptionPane().showMessageDialog(null, "Digite um ID valido");
 			e.printStackTrace();
 		}
 	}
