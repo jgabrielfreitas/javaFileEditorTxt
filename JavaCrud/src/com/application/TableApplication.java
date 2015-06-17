@@ -20,8 +20,8 @@ public class TableApplication extends JFrame implements ActionListener {
 	private JTable table;
 	private JScrollPane scrollPane;
 	List<Person> personListToShow = new ArrayList<Person>();
-	private JMenu menuFile;
-	public static JMenuItem menuItemNewPerson, menuSave, menuRemove, menuAlter;
+	private JMenu menuFile, menuAbout;
+	public static JMenuItem menuItemNewPerson, menuSave, menuRemove, menuAlter, menuCredit;
 	JMenuBar menuBar;
 	private static FileManager manager;
 
@@ -42,15 +42,25 @@ public class TableApplication extends JFrame implements ActionListener {
 		// creating toolbar
 		menuBar  = new JMenuBar();
 		menuFile = new JMenu("Arquivo"); 		   // opcao 'arquivo'
+		menuAbout = new JMenu("Sobre"); 		   // opcao 'sobre'
 		menuItemNewPerson = new JMenuItem("Novo"); // nova pessoa
 		menuSave = new JMenuItem("Salvar");        // salvar tabela
 		menuRemove = new JMenuItem("Remover");     // remover da tabela
 		menuAlter = new JMenuItem("Alterar");      // alterar da tabela
+		menuCredit = new JMenuItem("Credito");      // alterar da tabela
+		
+		// adicionando na opcao 'arquivo'
 		menuFile.add(menuItemNewPerson);
 		menuFile.add(menuRemove);
 		menuFile.add(menuAlter);
 		menuFile.add(menuSave);
+
+		// adicionando na opcao 'credito'
+		menuAbout.add(menuCredit);
+		
+		// adicionando os menus
 		menuBar.add(menuFile);
+		menuBar.add(menuAbout);
 		
 		// criando atalhos
 		menuItemNewPerson.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
@@ -61,6 +71,7 @@ public class TableApplication extends JFrame implements ActionListener {
 	    menuAlter.addActionListener(this);
 	    menuRemove.addActionListener(this);
 	    menuSave.addActionListener(this);
+	    menuCredit.addActionListener(this);
 
 		// criando as colunas da tabela
 		String columnNames[] = { "ID","Nome", "Idade", "Matricula", "Data", "Tipo" };
@@ -138,8 +149,10 @@ public class TableApplication extends JFrame implements ActionListener {
 			} else 
 				updateFile(idPersonToDelete);
 			
+		} else if (choice == menuCredit) {
+
+			new JOptionPane().showMessageDialog(null, "Trabalho realizado por:\n\n• Isabella Lucero\n•Joao Gabriel\n");
 		}
-		
 	}
 	
 	private Person getPersonById(String idSelected){
@@ -197,6 +210,10 @@ public class TableApplication extends JFrame implements ActionListener {
 		this.manager = manager;
 	}
 
+	public JTable getTable(){
+		return table;
+	}
+	
 	private void updateFile(String id) {
 		
 		try {

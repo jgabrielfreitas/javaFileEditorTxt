@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import objects.FileManager;
@@ -53,12 +54,46 @@ public class AlterPersonApplication extends JFrame {
 	   int result = JOptionPane.showConfirmDialog(null, panel, "Editor de Pessoa", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 	   
 	    if (result == JOptionPane.OK_OPTION) {
-	        Person person = new Person(combo.getSelectedItem().toString(),
+	        Person newPerson = new Person(combo.getSelectedItem().toString(),
 	        						   Integer.parseInt(ageField.getText()),
 	        						   nameField.getText(),
 	        						   new Double(registerField.getText()));
-	        person.setCreateAt(personToEdit.getCreateAt()); // mantem a data antiga
-	        manager.saveEditedFile(manager.loadFileByPath() + "and" + person.toString());
+	        newPerson.setCreateAt(personToEdit.getCreateAt()); // mantem a data antiga
+	        
+	        JTable table = tableApplication.getTable();
+	        
+	        // varre a lista novamente
+	        String contentNewFile = null;
+	        for (int i = 0; i < table.getRowCount(); i++) {
+	        	
+            	int currentId = new Integer(table.getValueAt(i, 0).toString());
+            	// se for um id diferente
+            	if(personId != currentId) {
+            		String name = (String) table.getValueAt(i, 1); // pega o nome da pessoa que esta na posicao de i
+            		int age = new Integer((String) table.getValueAt(i, 2)); // pega a idade da pessoa que esta na posicao de i
+            		double register = new Double((String) table.getValueAt(i, 3)); // pega a matricula da pessoa que esta na posicao de i
+            		String date = (String) table.getValueAt(i, 4); // pega a data de criacao da pessoa que esta na posicao de i
+            		String personType = (String) table.getValueAt(i, 5); // pega o tipo da pessoa que esta na posicao de i
+            		
+            		 
+            		Person personDifetent = new Person(personType, age, name, register);
+            		personDifetent.setCreateAt(date);
+            		
+            		if (contentNewFile == null)
+            			contentNewFile = personDifetent.toString();
+            		else
+            			contentNewFile = contentNewFile + "and" + personDifetent.toString();
+            		
+            	} else { // quando for o id selecionado
+            		
+            		if (contentNewFile == null)
+            			contentNewFile = newPerson.toString();
+            		else
+            			contentNewFile = contentNewFile + "and" + newPerson.toString();
+            	}
+            }
+	        
+	        manager.saveEditedFile(contentNewFile);
 	        tableApplication.refreshTable();
 	    }
 	}
